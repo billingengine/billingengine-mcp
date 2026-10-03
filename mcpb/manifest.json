@@ -1,0 +1,46 @@
+{
+  "manifest_version": "0.3",
+  "name": "billingengine",
+  "display_name": "BillingEngine",
+  "version": "0.1.0",
+  "description": "Create invoices and customers and record payments in BillingEngine from any MCP client.",
+  "long_description": "Connects Claude and other MCP clients to your BillingEngine account. Create customers and draft invoices, look up open invoices, save invoice PDFs and e-invoices and record payments. Invoices are created as drafts and nothing can be deleted. Needs a paid BillingEngine plan and the API key from Settings > API.",
+  "author": { "name": "Timo Kleemann", "url": "https://www.billingengine.com" },
+  "homepage": "https://www.billingengine.com/en/mcp",
+  "documentation": "https://www.billingengine.com/en/api",
+  "support": "https://github.com/billingengine/billingengine-mcp/issues",
+  "repository": { "type": "git", "url": "https://github.com/billingengine/billingengine-mcp.git" },
+  "license": "MIT",
+  "keywords": ["invoicing", "invoice", "e-invoice", "xrechnung", "zugferd", "datev", "billing"],
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"],
+      "env": { "BILLINGENGINE_API_KEY": "${user_config.api_key}" }
+    }
+  },
+  "user_config": {
+    "api_key": {
+      "type": "string",
+      "title": "API key",
+      "description": "Your BillingEngine API key from Settings > API (paid plans only).",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "tools": [
+    { "name": "find_customers", "description": "Searches customers by company, name or email" },
+    { "name": "create_customer", "description": "Creates a customer" },
+    { "name": "update_customer", "description": "Changes a customer" },
+    { "name": "create_invoice", "description": "Creates a draft invoice for a customer" },
+    { "name": "update_invoice", "description": "Changes a draft invoice" },
+    { "name": "list_invoices", "description": "Lists invoices, filtered by status, customer, number or date" },
+    { "name": "get_invoice", "description": "Returns one invoice with items and payment status" },
+    { "name": "download_invoice", "description": "Saves the PDF or the XML e-invoice of an invoice on this computer" },
+    { "name": "record_payment", "description": "Records a payment for sent invoices" },
+    { "name": "list_payments", "description": "Lists payments, optionally for one invoice" }
+  ],
+  "compatibility": { "runtimes": { "node": ">=20" } }
+}
