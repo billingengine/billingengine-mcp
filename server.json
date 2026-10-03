@@ -3,18 +3,18 @@
   "name": "com.billingengine/mcp",
   "title": "BillingEngine",
   "description": "Create invoices and customers and record payments in BillingEngine from any MCP client.",
-  "websiteUrl": "https://www.billingengine.com/mcp",
+  "websiteUrl": "https://www.billingengine.com/en/mcp",
   "repository": {
     "url": "https://github.com/billingengine/billingengine-mcp",
     "source": "github"
   },
-  "version": "0.1.0",
+  "version": "0.1.1",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "billingengine-mcp",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "transport": {
         "type": "stdio"
       },

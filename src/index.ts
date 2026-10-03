@@ -24,7 +24,7 @@ const INSTRUCTIONS = [
   "Nothing can be deleted through this server.",
 ].join(" ");
 
-const server = new McpServer({ name: "billingengine", version: "0.1.0" }, { instructions: INSTRUCTIONS });
+const server = new McpServer({ name: "billingengine", version: "0.1.1" }, { instructions: INSTRUCTIONS });
 
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
 const page = z.number().int().min(1).optional().describe("Page of the list, starting at 1");
@@ -237,7 +237,19 @@ server.registerTool(
     outputSchema: output,
     annotations: WRITE,
   },
-  (input) => respond(() => client.post("/payments", input)),
+  (input) =>
+    respond(async () => {
+      try {
+        return await client.post("/payments", input);
+      } catch (error) {
+        if (error instanceof BillingEngineError && error.message.includes("Invoices is invalid")) {
+          throw new BillingEngineError(
+            `${error.message} Payments can only be recorded for sent, open invoices of the same customer and tax rate; drafts cannot be paid.`,
+          );
+        }
+        throw error;
+      }
+    }),
 );
 
 server.registerTool(

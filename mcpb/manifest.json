@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "billingengine",
   "display_name": "BillingEngine",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Create invoices and customers and record payments in BillingEngine from any MCP client.",
   "long_description": "Connects Claude and other MCP clients to your BillingEngine account. Create customers and draft invoices, look up open invoices, save invoice PDFs and e-invoices and record payments. Invoices are created as drafts and nothing can be deleted. Needs a paid BillingEngine plan and the API key from Settings > API.",
   "author": { "name": "Timo Kleemann", "url": "https://www.billingengine.com" },

@@ -1,7 +1,7 @@
 {
   "name": "billingengine-mcp",
   "mcpName": "com.billingengine/mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP server for BillingEngine: create customers and invoices, look up invoices and record payments from Claude, Cursor and other MCP clients.",
   "keywords": [
     "mcp",
@@ -13,7 +13,7 @@
     "xrechnung",
     "zugferd"
   ],
-  "homepage": "https://www.billingengine.com/mcp",
+  "homepage": "https://www.billingengine.com/en/mcp",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/billingengine/billingengine-mcp.git"
