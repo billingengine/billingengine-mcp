@@ -4,16 +4,16 @@ Create customers and invoices, look up open invoices and record payments in
 [BillingEngine](https://www.billingengine.com) by talking to Claude, Cursor or any other
 [MCP](https://modelcontextprotocol.io) client:
 
-> "Create an invoice for Malermeister Müller over 100 euros."
+> "Create an invoice for Acme Painting over 100 euros."
 >
 > "Which invoices are overdue?"
 >
-> "Müller paid invoice 2610030028, record the payment."
+> "Acme paid invoice 2610030028, record the payment."
 
 BillingEngine is invoicing software for freelancers and small businesses with
-[e-invoicing](https://www.billingengine.com/en/features) (XRechnung and ZUGFeRD / Factur-X),
-DATEV export and a German and English interface. The server is a thin layer over the
-[BillingEngine API](https://www.billingengine.com/en/api) and runs on your computer.
+[e-invoicing](https://www.billingengine.com/en/features) (EN 16931, XRechnung, ZUGFeRD / Factur-X).
+The server is a thin layer over the [BillingEngine API](https://www.billingengine.com/en/api)
+and runs on your computer.
 
 ## Requirements
 
