@@ -69,12 +69,19 @@ const invoiceFields = {
 const READ = { readOnlyHint: true, openWorldHint: false };
 const WRITE = { readOnlyHint: false, destructiveHint: false, openWorldHint: false };
 
-type Result = { content: { type: "text"; text: string }[]; isError?: boolean };
+type Result = {
+  content: { type: "text"; text: string }[];
+  structuredContent?: Record<string, unknown>;
+  isError?: boolean;
+};
+
+const output = z.looseObject({});
 
 async function respond(action: () => Promise<unknown>): Promise<Result> {
   try {
     const value = await action();
-    return { content: [{ type: "text", text: typeof value === "string" ? value : JSON.stringify(value, null, 2) }] };
+    const structured = typeof value === "string" ? { message: value } : (value as Record<string, unknown>);
+    return { content: [{ type: "text", text: JSON.stringify(structured, null, 2) }], structuredContent: structured };
   } catch (error) {
     const message = error instanceof BillingEngineError ? error.message : `Unexpected error: ${(error as Error).message}`;
     return { content: [{ type: "text", text: message }], isError: true };
@@ -97,6 +104,7 @@ server.registerTool(
     title: "Find customers",
     description: "Lists customers, optionally filtered by a search text that matches company, names and email.",
     inputSchema: { query: z.string().optional(), page },
+    outputSchema: output,
     annotations: READ,
   },
   ({ query, page }) => respond(() => client.get("/customers", { query, page })),
@@ -109,6 +117,7 @@ server.registerTool(
     description:
       "Creates a customer. Needs a company or a last name and a full address (line 1, postal code, city, country).",
     inputSchema: { ...customerFields, address },
+    outputSchema: output,
     annotations: WRITE,
   },
   ({ address, ...fields }) => respond(() => client.post("/customers", { ...fields, address_attributes: address })),
@@ -120,6 +129,7 @@ server.registerTool(
     title: "Update a customer",
     description: "Changes the given fields of a customer; fields that are left out stay as they are.",
     inputSchema: { id: z.number().int(), ...customerFields, address: address.partial().optional() },
+    outputSchema: output,
     annotations: { ...WRITE, idempotentHint: true },
   },
   ({ id, address, ...fields }) =>
@@ -134,6 +144,7 @@ server.registerTool(
       "Creates a draft invoice for a customer. Number, language, texts and VAT treatment come from the account settings. " +
       "The invoice is not sent; it counts towards the monthly invoice maximum of the plan.",
     inputSchema: { customer_id: z.number().int(), items: z.array(item).min(1), ...invoiceFields },
+    outputSchema: output,
     annotations: WRITE,
   },
   (input) => respond(async () => withInvoiceLinks(await client.post("/invoices", input))),
@@ -146,6 +157,7 @@ server.registerTool(
     description:
       "Changes a draft invoice. Passing items replaces all existing items, so send the complete list. Sent invoices cannot be changed.",
     inputSchema: { id: z.number().int(), items: z.array(item).min(1).optional(), ...invoiceFields },
+    outputSchema: output,
     annotations: { ...WRITE, idempotentHint: true },
   },
   ({ id, ...changes }) => respond(async () => withInvoiceLinks(await client.patch(`/invoices/${id}`, changes))),
@@ -166,6 +178,7 @@ server.registerTool(
       page,
       per_page: z.number().int().min(1).max(100).optional(),
     },
+    outputSchema: output,
     annotations: READ,
   },
   (filters) => respond(async () => withInvoiceLinks(await client.get("/invoices", filters))),
@@ -177,6 +190,7 @@ server.registerTool(
     title: "Get an invoice",
     description: "Returns one invoice with its items, amounts and payment status.",
     inputSchema: { id: z.number().int() },
+    outputSchema: output,
     annotations: READ,
   },
   ({ id }) => respond(async () => withInvoiceLinks(await client.get(`/invoices/${id}`))),
@@ -194,6 +208,7 @@ server.registerTool(
       format: z.enum(["pdf", "xml"]).default("pdf"),
       directory: z.string().optional().describe("Target folder, defaults to ~/Downloads"),
     },
+    outputSchema: output,
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   },
   ({ id, format, directory }) =>
@@ -219,6 +234,7 @@ server.registerTool(
       payment_method: z.enum(["transfer", "cash"]).optional().describe("Defaults to transfer"),
       date: date.optional().describe("Defaults to today"),
     },
+    outputSchema: output,
     annotations: WRITE,
   },
   (input) => respond(() => client.post("/payments", input)),
@@ -230,6 +246,7 @@ server.registerTool(
     title: "List payments",
     description: "Lists recorded payments, newest first, optionally only those for one invoice.",
     inputSchema: { invoice_id: z.number().int().optional(), page },
+    outputSchema: output,
     annotations: READ,
   },
   (filters) => respond(() => client.get("/payments", filters)),

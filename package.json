@@ -38,7 +38,8 @@
   "scripts": {
     "build": "tsc && chmod +x dist/index.js",
     "prepublishOnly": "npm run build",
-    "bundle": "npm run build && esbuild dist/index.js --bundle --platform=node --format=esm --target=node20 --outfile=mcpb/server/index.js --banner:js=\"import { createRequire } from 'node:module'; const require = createRequire(import.meta.url);\" && mcpb pack mcpb billingengine.mcpb"
+    "bundle": "npm run build && esbuild dist/index.js --bundle --platform=node --format=esm --target=node20 --outfile=mcpb/server/index.js --banner:js=\"import { createRequire } from 'node:module'; const require = createRequire(import.meta.url);\" && mcpb pack mcpb billingengine.mcpb",
+    "bundle:smithery": "npm run bundle && node scripts/smithery-bundle.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.0",

@@ -1,4 +1,5 @@
 node_modules
 dist
 mcpb/server
+mcpb-smithery
 *.mcpb
