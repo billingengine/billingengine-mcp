@@ -1,5 +1,6 @@
 {
   "name": "billingengine-mcp",
+  "mcpName": "com.billingengine/mcp",
   "version": "0.1.0",
   "description": "MCP server for BillingEngine: create customers and invoices, look up invoices and record payments from Claude, Cursor and other MCP clients.",
   "keywords": [
@@ -13,6 +14,13 @@
     "zugferd"
   ],
   "homepage": "https://www.billingengine.com/mcp",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/billingengine/billingengine-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/billingengine/billingengine-mcp/issues"
+  },
   "license": "MIT",
   "author": "Timo Kleemann",
   "type": "module",
