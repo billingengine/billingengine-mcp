@@ -1,5 +1,7 @@
 # BillingEngine MCP server
 
+[![AllMCPs Verified](https://allmcps.com/api/badge/billingengine-mcp)](https://allmcps.com/mcp/billingengine-mcp?verify=e69e154f-3c18-4a25-b8a9-42bfcd9c6182)
+
 Create customers and invoices, look up open invoices and record payments in
 [BillingEngine](https://www.billingengine.com) by talking to Claude, Cursor or any other
 [MCP](https://modelcontextprotocol.io) client:
