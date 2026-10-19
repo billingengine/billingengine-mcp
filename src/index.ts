@@ -24,7 +24,7 @@ const INSTRUCTIONS = [
   "Nothing can be deleted through this server.",
 ].join(" ");
 
-const server = new McpServer({ name: "billingengine", version: "0.1.1" }, { instructions: INSTRUCTIONS });
+const server = new McpServer({ name: "billingengine", version: "0.1.2" }, { instructions: INSTRUCTIONS });
 
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
 const page = z.number().int().min(1).optional().describe("Page of the list, starting at 1");
@@ -60,14 +60,15 @@ const item = z.object({
 const invoiceFields = {
   date: date.optional().describe("Invoice date, defaults to today"),
   due_days: z.number().int().min(0).optional().describe("Days until payment is due"),
-  introduction: z.string().optional(),
-  signature: z.string().optional(),
+  opening_text: z.string().optional().describe("Text above the items, defaults to the account's text"),
+  closing_text: z.string().optional().describe("Text below the items, defaults to the account's text"),
   service_period_start_date: date.optional(),
   service_period_end_date: date.optional(),
 };
 
 const READ = { readOnlyHint: true, openWorldHint: false };
 const WRITE = { readOnlyHint: false, destructiveHint: false, openWorldHint: false };
+const UPDATE = { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false };
 
 type Result = {
   content: { type: "text"; text: string }[];
@@ -130,7 +131,7 @@ server.registerTool(
     description: "Changes the given fields of a customer; fields that are left out stay as they are.",
     inputSchema: { id: z.number().int(), ...customerFields, address: address.partial().optional() },
     outputSchema: output,
-    annotations: { ...WRITE, idempotentHint: true },
+    annotations: UPDATE,
   },
   ({ id, address, ...fields }) =>
     respond(() => client.patch(`/customers/${id}`, { ...fields, ...(address && { address_attributes: address }) })),
@@ -158,7 +159,7 @@ server.registerTool(
       "Changes a draft invoice. Passing items replaces all existing items, so send the complete list. Sent invoices cannot be changed.",
     inputSchema: { id: z.number().int(), items: z.array(item).min(1).optional(), ...invoiceFields },
     outputSchema: output,
-    annotations: { ...WRITE, idempotentHint: true },
+    annotations: UPDATE,
   },
   ({ id, ...changes }) => respond(async () => withInvoiceLinks(await client.patch(`/invoices/${id}`, changes))),
 );
