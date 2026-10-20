@@ -72,7 +72,7 @@ async function describeFailure(response: Response): Promise<string> {
 
   switch (response.status) {
     case 401:
-      return "The API key was rejected. Check BILLINGENGINE_API_KEY (Settings > API in BillingEngine).";
+      return "The API key was rejected. Check BILLINGENGINE_API_KEY (Settings > API keys in BillingEngine).";
     case 403:
       return messages.join("; ") || "This API key is not allowed to do that. The API needs a paid plan.";
     case 429:

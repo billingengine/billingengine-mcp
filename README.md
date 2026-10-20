@@ -21,7 +21,7 @@ and runs on your computer.
 
 - Node.js 20 or newer
 - A BillingEngine account on a paid plan. The API is not available in the Free plan.
-- Your API key from **Settings > API** in BillingEngine
+- Your API key from **Settings > API keys** in BillingEngine
 
 ## Setup
 
@@ -55,13 +55,13 @@ Use the same `command`, `args` and `env` as above in the MCP settings of your cl
 
 | Tool | What it does |
 | --- | --- |
-| `find_customers` | Searches customers by company, name or email |
+| `find_customers` | Searches customers by company, name, email or identifier of another system |
 | `create_customer` | Creates a customer |
 | `update_customer` | Changes a customer |
 | `create_invoice` | Creates a **draft** invoice for a customer |
 | `update_invoice` | Changes a draft invoice |
-| `list_invoices` | Lists invoices, filtered by status, customer, number or date |
-| `get_invoice` | Returns one invoice with items and payment status |
+| `list_invoices` | Lists invoices, filtered by status, type, customer, number, identifier or date |
+| `get_invoice` | Returns one invoice with items, tax breakdown and status |
 | `download_invoice` | Saves the PDF or the XML e-invoice to your Downloads folder |
 | `record_payment` | Records a payment for sent invoices |
 | `list_payments` | Lists payments, optionally for one invoice |
@@ -70,14 +70,14 @@ Use the same `command`, `args` and `env` as above in the MCP settings of your cl
 
 - Invoices are created as **drafts**. Nothing is sent to your customers; you review and send
   the invoice in BillingEngine. Every result contains a link to open the draft.
-- Prices are net. Number, language, texts, VAT treatment and payment terms come from your
+- Prices are net or gross, as set in your account; every invoice says which. Amounts in results are decimal strings such as `"119.00"`. Number, language, texts, VAT treatment and payment terms come from your
   account settings, exactly as in the invoice form.
 - **Nothing can be deleted** through this server.
 - New invoices count towards the monthly invoice maximum of your plan.
 - The API allows 60 requests per minute per key.
 - Your key stays on your computer and is only sent to BillingEngine.
 
-If a key is ever exposed, generate a new one under **Settings > API**. The old key stops working
+If a key is ever exposed, create a new one under **Settings > API keys**. The old key stops working
 immediately. The settings also show when the key was last used.
 
 ## Configuration

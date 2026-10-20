@@ -2,9 +2,9 @@
   "manifest_version": "0.3",
   "name": "billingengine",
   "display_name": "BillingEngine",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Create invoices and customers and record payments in BillingEngine from any MCP client.",
-  "long_description": "Connects Claude and other MCP clients to your BillingEngine account. Create customers and draft invoices, look up open invoices, save invoice PDFs and e-invoices and record payments. Invoices are created as drafts and nothing can be deleted. Needs a paid BillingEngine plan and the API key from Settings > API.",
+  "long_description": "Connects Claude and other MCP clients to your BillingEngine account. Create customers and draft invoices, look up open invoices, save invoice PDFs and e-invoices and record payments. Invoices are created as drafts and nothing can be deleted. Needs a paid BillingEngine plan and an API key that you create under Settings > API keys.",
   "author": { "name": "Timo Kleemann", "url": "https://www.billingengine.com" },
   "homepage": "https://www.billingengine.com/en/mcp",
   "documentation": "https://www.billingengine.com/en/api",
@@ -25,7 +25,7 @@
     "api_key": {
       "type": "string",
       "title": "API key",
-      "description": "Your BillingEngine API key from Settings > API (paid plans only).",
+      "description": "Your BillingEngine API key from Settings > API keys (paid plans only).",
       "sensitive": true,
       "required": true
     }
@@ -36,8 +36,8 @@
     { "name": "update_customer", "description": "Changes a customer" },
     { "name": "create_invoice", "description": "Creates a draft invoice for a customer" },
     { "name": "update_invoice", "description": "Changes a draft invoice" },
-    { "name": "list_invoices", "description": "Lists invoices, filtered by status, customer, number or date" },
-    { "name": "get_invoice", "description": "Returns one invoice with items and payment status" },
+    { "name": "list_invoices", "description": "Lists invoices, filtered by status, type, customer, number, identifier or date" },
+    { "name": "get_invoice", "description": "Returns one invoice with items, tax breakdown and status" },
     { "name": "download_invoice", "description": "Saves the PDF or the XML e-invoice of an invoice on this computer" },
     { "name": "record_payment", "description": "Records a payment for sent invoices" },
     { "name": "list_payments", "description": "Lists payments, optionally for one invoice" }

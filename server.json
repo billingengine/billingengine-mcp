@@ -8,20 +8,20 @@
     "url": "https://github.com/billingengine/billingengine-mcp",
     "source": "github"
   },
-  "version": "0.1.2",
+  "version": "0.2.0",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "billingengine-mcp",
-      "version": "0.1.2",
+      "version": "0.2.0",
       "transport": {
         "type": "stdio"
       },
       "environmentVariables": [
         {
           "name": "BILLINGENGINE_API_KEY",
-          "description": "API key from Settings > API in BillingEngine (paid plans only)",
+          "description": "API key from Settings > API keys in BillingEngine (paid plans only)",
           "isRequired": true,
           "isSecret": true
         }

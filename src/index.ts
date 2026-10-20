@@ -9,7 +9,7 @@ import { BillingEngineClient, BillingEngineError } from "./client.js";
 
 const apiKey = process.env.BILLINGENGINE_API_KEY;
 if (!apiKey) {
-  console.error("BILLINGENGINE_API_KEY is not set. You find your key in BillingEngine under Settings > API.");
+  console.error("BILLINGENGINE_API_KEY is not set. You find your key in BillingEngine under Settings > API keys.");
   process.exit(1);
 }
 
@@ -19,12 +19,12 @@ const client = new BillingEngineClient(baseUrl, apiKey);
 const INSTRUCTIONS = [
   "BillingEngine is an invoicing application for freelancers and small businesses.",
   "Look a customer up with find_customers before creating an invoice and never guess a customer id; ask which one is meant when several match.",
-  "Prices are net amounts, the tax rate and everything else not given come from the account's settings.",
+  "Prices are net or gross, depending on the price setting of the account; every invoice states which in prices_include_tax. The tax rate and everything else not given come from the account's settings. Amounts in results are decimal strings such as \"119.00\".",
   "Invoices are created as drafts and are not sent: tell the user to review and send them in BillingEngine, using the app_url in the result.",
   "Nothing can be deleted through this server.",
 ].join(" ");
 
-const server = new McpServer({ name: "billingengine", version: "0.1.2" }, { instructions: INSTRUCTIONS });
+const server = new McpServer({ name: "billingengine", version: "0.2.0" }, { instructions: INSTRUCTIONS });
 
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
 const page = z.number().int().min(1).optional().describe("Page of the list, starting at 1");
@@ -40,17 +40,20 @@ const address = z.object({
 
 const customerFields = {
   company: z.string().optional(),
+  title: z.string().optional().describe("Academic or professional title such as Dr."),
+  salutation: z.enum(["male", "female", "family"]).optional().describe("How the letters address the customer"),
   first_name: z.string().optional(),
   last_name: z.string().optional(),
   email: z.string().optional(),
   phone: z.string().optional(),
   vat_number: z.string().optional(),
   buyer_reference: z.string().optional().describe("Leitweg-ID or buyer reference for e-invoices"),
+  external_id: z.string().optional().describe("Identifier of the customer in another system, unique per account"),
 };
 
 const item = z.object({
-  title: z.string(),
-  price: z.number().describe("Net price per unit"),
+  name: z.string(),
+  price: z.number().describe("Price per unit, net or gross as set in the account (see prices_include_tax of an invoice)"),
   description: z.string().optional(),
   quantity: z.number().optional().describe("Defaults to 1"),
   unit_code: z.string().optional().describe("UN/ECE unit code such as C62 (piece) or HUR (hour)"),
@@ -64,6 +67,7 @@ const invoiceFields = {
   closing_text: z.string().optional().describe("Text below the items, defaults to the account's text"),
   service_period_start_date: date.optional(),
   service_period_end_date: date.optional(),
+  external_id: z.string().optional().describe("Identifier of the invoice in another system; a second invoice with the same one is refused"),
 };
 
 const READ = { readOnlyHint: true, openWorldHint: false };
@@ -104,11 +108,15 @@ server.registerTool(
   {
     title: "Find customers",
     description: "Lists customers, optionally filtered by a search text that matches company, names and email.",
-    inputSchema: { query: z.string().optional(), page },
+    inputSchema: {
+      query: z.string().optional(),
+      external_id: z.string().optional().describe("Find the customer with this identifier from another system"),
+      page,
+    },
     outputSchema: output,
     annotations: READ,
   },
-  ({ query, page }) => respond(() => client.get("/customers", { query, page })),
+  (filters) => respond(() => client.get("/customers", filters)),
 );
 
 server.registerTool(
@@ -121,7 +129,7 @@ server.registerTool(
     outputSchema: output,
     annotations: WRITE,
   },
-  ({ address, ...fields }) => respond(() => client.post("/customers", { ...fields, address_attributes: address })),
+  ({ address, ...fields }) => respond(() => client.post("/customers", { ...fields, address })),
 );
 
 server.registerTool(
@@ -134,7 +142,7 @@ server.registerTool(
     annotations: UPDATE,
   },
   ({ id, address, ...fields }) =>
-    respond(() => client.patch(`/customers/${id}`, { ...fields, ...(address && { address_attributes: address }) })),
+    respond(() => client.patch(`/customers/${id}`, { ...fields, ...(address && { address }) })),
 );
 
 server.registerTool(
@@ -169,11 +177,13 @@ server.registerTool(
   {
     title: "List invoices",
     description:
-      "Lists invoices, newest first. Status: draft, open (sent and unpaid), overdue (open and past due) or paid.",
+      "Lists invoices, newest first. Status: draft, open (sent and unpaid), overdue (open and past due), paid, uncollectible or cancelled. Type: invoice or credit_note.",
     inputSchema: {
-      status: z.enum(["draft", "open", "overdue", "paid"]).optional(),
+      status: z.enum(["draft", "open", "overdue", "paid", "uncollectible", "cancelled"]).optional(),
+      type: z.enum(["invoice", "credit_note"]).optional(),
       customer_id: z.number().int().optional(),
       number: z.string().optional(),
+      external_id: z.string().optional().describe("Find the invoice with this identifier from another system"),
       after: date.optional().describe("Invoice date from"),
       before: date.optional().describe("Invoice date until"),
       page,
@@ -189,7 +199,7 @@ server.registerTool(
   "get_invoice",
   {
     title: "Get an invoice",
-    description: "Returns one invoice with its items, amounts and payment status.",
+    description: "Returns one invoice with its items, tax breakdown, amounts and status. Amounts are decimal strings such as \"119.00\".",
     inputSchema: { id: z.number().int() },
     outputSchema: output,
     annotations: READ,
@@ -232,6 +242,7 @@ server.registerTool(
     inputSchema: {
       invoice_ids: z.array(z.number().int()).min(1),
       amount: z.number().positive().describe("Gross amount received"),
+      external_id: z.string().optional().describe("Identifier of the payment in another system"),
       payment_method: z.enum(["transfer", "cash"]).optional().describe("Defaults to transfer"),
       date: date.optional().describe("Defaults to today"),
     },
