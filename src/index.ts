@@ -24,7 +24,7 @@ const INSTRUCTIONS = [
   "Nothing can be deleted through this server.",
 ].join(" ");
 
-const server = new McpServer({ name: "billingengine", version: "0.2.0" }, { instructions: INSTRUCTIONS });
+const server = new McpServer({ name: "billingengine", version: "0.2.1" }, { instructions: INSTRUCTIONS });
 
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
 const page = z.number().int().min(1).optional().describe("Page of the list, starting at 1");
@@ -63,10 +63,11 @@ const item = z.object({
 const invoiceFields = {
   date: date.optional().describe("Invoice date, defaults to today"),
   due_days: z.number().int().min(0).optional().describe("Days until payment is due"),
-  opening_text: z.string().optional().describe("Text above the items, defaults to the account's text"),
+  opening_text: z.string().optional().describe("Text above the items, defaults to the account's text. Do not put the purchase order number here, use purchase_order_number"),
   closing_text: z.string().optional().describe("Text below the items, defaults to the account's text"),
   service_period_start_date: date.optional(),
   service_period_end_date: date.optional(),
+  purchase_order_number: z.string().optional().describe("Purchase order number of the customer, printed on the invoice and sent in the e-invoice"),
   external_id: z.string().optional().describe("Identifier of the invoice in another system; a second invoice with the same one is refused"),
 };
 
