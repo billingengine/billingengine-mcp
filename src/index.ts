@@ -24,7 +24,7 @@ const INSTRUCTIONS = [
   "Nothing can be deleted through this server.",
 ].join(" ");
 
-const server = new McpServer({ name: "billingengine", version: "0.2.1" }, { instructions: INSTRUCTIONS });
+const server = new McpServer({ name: "billingengine", version: "0.2.2" }, { instructions: INSTRUCTIONS });
 
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
 const page = z.number().int().min(1).optional().describe("Page of the list, starting at 1");
@@ -178,9 +178,9 @@ server.registerTool(
   {
     title: "List invoices",
     description:
-      "Lists invoices, newest first. Status: draft, open (sent and unpaid), overdue (open and past due), paid, uncollectible or cancelled. Type: invoice or credit_note.",
+      "Lists invoices, newest first. Status: draft, open (sent and unpaid), overdue (open and past due), paid, uncollectible, cancelled or cancellation (a credit note that cancels an invoice, once sent). Type: invoice or credit_note.",
     inputSchema: {
-      status: z.enum(["draft", "open", "overdue", "paid", "uncollectible", "cancelled"]).optional(),
+      status: z.enum(["draft", "open", "overdue", "paid", "uncollectible", "cancelled", "cancellation"]).optional(),
       type: z.enum(["invoice", "credit_note"]).optional(),
       customer_id: z.number().int().optional(),
       number: z.string().optional(),
