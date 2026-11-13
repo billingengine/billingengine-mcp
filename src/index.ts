@@ -24,7 +24,7 @@ const INSTRUCTIONS = [
   "Nothing can be deleted through this server.",
 ].join(" ");
 
-const server = new McpServer({ name: "billingengine", version: "0.2.2" }, { instructions: INSTRUCTIONS });
+const server = new McpServer({ name: "billingengine", version: "0.2.3" }, { instructions: INSTRUCTIONS });
 
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
 const page = z.number().int().min(1).optional().describe("Page of the list, starting at 1");
@@ -49,6 +49,10 @@ const customerFields = {
   vat_number: z.string().optional(),
   buyer_reference: z.string().optional().describe("Leitweg-ID or buyer reference for e-invoices"),
   external_id: z.string().optional().describe("Identifier of the customer in another system, unique per account"),
+  customer_type: z
+    .enum(["business", "consumer"])
+    .optional()
+    .describe("Business or consumer; it decides the default interest and the late payment flat fee on reminders. Without it the account default applies"),
 };
 
 const item = z.object({
