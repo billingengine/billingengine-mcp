@@ -1,5 +1,7 @@
 # BillingEngine MCP server
 
+[![npm](https://img.shields.io/npm/v/billingengine-mcp)](https://www.npmjs.com/package/billingengine-mcp)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![AllMCPs Verified](https://allmcps.com/api/badge/billingengine-mcp)](https://allmcps.com/mcp/billingengine-mcp?verify=e69e154f-3c18-4a25-b8a9-42bfcd9c6182)
 
 Create customers and invoices, look up open invoices and record payments in
@@ -16,6 +18,19 @@ BillingEngine is invoicing software for freelancers and small businesses with
 [e-invoicing](https://www.billingengine.com/en/features) (EN 16931, XRechnung, ZUGFeRD / Factur-X).
 The server is a thin layer over the [BillingEngine API](https://www.billingengine.com/en/api)
 and runs on your computer.
+
+## What you can use it for
+
+- **Billing by conversation:** have Claude or Cursor create a customer and a draft invoice from a
+  sentence, then review and send it in BillingEngine.
+- **Chasing payments:** ask which invoices are open or overdue and record incoming payments.
+- **E-invoices:** download an invoice as PDF or as a structured XML e-invoice (XRechnung,
+  ZUGFeRD / Factur-X, EN 16931), for example to pass it on to your tax advisor or a customer's
+  accounting system.
+- **Automation:** combine it with other MCP servers, such as a calendar or a time tracker, to turn
+  logged work into invoices.
+
+BillingEngine is built for German invoicing requirements and e-invoicing.
 
 ## Requirements
 
